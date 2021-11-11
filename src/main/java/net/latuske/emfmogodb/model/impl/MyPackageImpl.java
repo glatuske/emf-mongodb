@@ -3,12 +3,15 @@
 package net.latuske.emfmogodb.model.impl;
 
 import net.latuske.emfmogodb.model.Address;
+import net.latuske.emfmogodb.model.EMailAddress;
+import net.latuske.emfmogodb.model.EMailAddressType;
 import net.latuske.emfmogodb.model.MyFactory;
 import net.latuske.emfmogodb.model.MyPackage;
 import net.latuske.emfmogodb.model.Person;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -34,6 +37,20 @@ public class MyPackageImpl extends EPackageImpl implements MyPackage {
 	 * @generated
 	 */
 	private EClass addressEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass eMailAddressEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum eMailAddressTypeEEnum = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -119,8 +136,17 @@ public class MyPackageImpl extends EPackageImpl implements MyPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getPerson_Addresses() {
+	public EReference getPerson_Address() {
 		return (EReference)personEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getPerson_EmailAddresses() {
+		return (EReference)personEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -139,6 +165,42 @@ public class MyPackageImpl extends EPackageImpl implements MyPackage {
 	 */
 	public EAttribute getAddress_City() {
 		return (EAttribute)addressEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getEMailAddress() {
+		return eMailAddressEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getEMailAddress_Email() {
+		return (EAttribute)eMailAddressEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getEMailAddress_Type() {
+		return (EAttribute)eMailAddressEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getEMailAddressType() {
+		return eMailAddressTypeEEnum;
 	}
 
 	/**
@@ -171,10 +233,18 @@ public class MyPackageImpl extends EPackageImpl implements MyPackage {
 		// Create classes and their features
 		personEClass = createEClass(PERSON);
 		createEAttribute(personEClass, PERSON__NAME);
-		createEReference(personEClass, PERSON__ADDRESSES);
+		createEReference(personEClass, PERSON__ADDRESS);
+		createEReference(personEClass, PERSON__EMAIL_ADDRESSES);
 
 		addressEClass = createEClass(ADDRESS);
 		createEAttribute(addressEClass, ADDRESS__CITY);
+
+		eMailAddressEClass = createEClass(EMAIL_ADDRESS);
+		createEAttribute(eMailAddressEClass, EMAIL_ADDRESS__EMAIL);
+		createEAttribute(eMailAddressEClass, EMAIL_ADDRESS__TYPE);
+
+		// Create enums
+		eMailAddressTypeEEnum = createEEnum(EMAIL_ADDRESS_TYPE);
 	}
 
 	/**
@@ -209,10 +279,20 @@ public class MyPackageImpl extends EPackageImpl implements MyPackage {
 		// Initialize classes, features, and operations; add parameters
 		initEClass(personEClass, Person.class, "Person", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getPerson_Name(), ecorePackage.getEString(), "name", null, 0, 1, Person.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getPerson_Addresses(), this.getAddress(), null, "addresses", null, 0, -1, Person.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getPerson_Address(), this.getAddress(), null, "address", null, 0, 1, Person.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getPerson_EmailAddresses(), this.getEMailAddress(), null, "emailAddresses", null, 0, -1, Person.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(addressEClass, Address.class, "Address", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getAddress_City(), ecorePackage.getEString(), "city", null, 0, 1, Address.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(eMailAddressEClass, EMailAddress.class, "EMailAddress", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getEMailAddress_Email(), ecorePackage.getEString(), "email", null, 0, 1, EMailAddress.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getEMailAddress_Type(), this.getEMailAddressType(), "type", null, 0, 1, EMailAddress.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		// Initialize enums and add enum literals
+		initEEnum(eMailAddressTypeEEnum, EMailAddressType.class, "EMailAddressType");
+		addEEnumLiteral(eMailAddressTypeEEnum, EMailAddressType.PRIVATE);
+		addEEnumLiteral(eMailAddressTypeEEnum, EMailAddressType.OFFICE);
 
 		// Create resource
 		createResource(eNS_URI);

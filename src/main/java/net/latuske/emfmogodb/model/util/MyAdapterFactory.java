@@ -76,6 +76,10 @@ public class MyAdapterFactory extends AdapterFactoryImpl {
 				return createAddressAdapter();
 			}
 			@Override
+			public Adapter caseEMailAddress(EMailAddress object) {
+				return createEMailAddressAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -120,6 +124,20 @@ public class MyAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createAddressAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link net.latuske.emfmogodb.model.EMailAddress <em>EMail Address</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see net.latuske.emfmogodb.model.EMailAddress
+	 * @generated
+	 */
+	public Adapter createEMailAddressAdapter() {
 		return null;
 	}
 

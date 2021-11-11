@@ -7,8 +7,12 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 
@@ -20,6 +24,8 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import net.latuske.emfmogodb.model.Address;
+import net.latuske.emfmogodb.model.EMailAddress;
+import net.latuske.emfmogodb.model.EMailAddressType;
 import net.latuske.emfmogodb.model.MyFactory;
 import net.latuske.emfmogodb.model.MyPackage;
 import net.latuske.emfmogodb.model.Person;
@@ -38,16 +44,26 @@ public class EmfMogodb {
 		Address address1 = MyFactory.eINSTANCE.createAddress();
 		address1.setCity("Stuttgart");
 
+		EMailAddress eMailAddress1 = MyFactory.eINSTANCE.createEMailAddress();
+		eMailAddress1.setEmail("alice@bob.alice");
+		eMailAddress1.setType(EMailAddressType.OFFICE);
+
 		Person alice = MyFactory.eINSTANCE.createPerson();
 		alice.setName("Alice");
-		alice.getAddresses().add(address1);
+		alice.setAddress(address1);
+		alice.getEmailAddresses().add(eMailAddress1);
 
 		Address address2 = MyFactory.eINSTANCE.createAddress();
 		address2.setCity("Stuttgart");
 
+		EMailAddress eMailAddress2 = MyFactory.eINSTANCE.createEMailAddress();
+		eMailAddress2.setEmail("bob@bob.alice");
+		eMailAddress2.setType(EMailAddressType.PRIVATE);
+
 		Person bob = MyFactory.eINSTANCE.createPerson();
 		bob.setName("Bob");
-		bob.getAddresses().add(address2);
+		bob.setAddress(address2);
+		bob.getEmailAddresses().add(eMailAddress2);
 
 		insert(collection, alice);
 		findByName(collection, "Alice");
@@ -105,7 +121,13 @@ public class EmfMogodb {
 		document.put("emf-type", eClass.getName());
 
 		for (EAttribute eAttribute : eClass.getEAllAttributes()) {
-			document.put(eAttribute.getName(), eObject.eGet(eAttribute));
+			Object value = eObject.eGet(eAttribute);
+			if (eAttribute.getEType() instanceof EEnum) {
+				Enumerator enumerator = (Enumerator) value;
+				document.put(eAttribute.getName(), enumerator.getName());
+			} else {
+				document.put(eAttribute.getName(), value);
+			}
 		}
 
 		for (EReference eReference : eClass.getEAllContainments()) {
@@ -136,7 +158,16 @@ public class EmfMogodb {
 		EObject eObject = MyFactory.eINSTANCE.create(eClass);
 
 		for (EAttribute eAttribute : eClass.getEAllAttributes()) {
-			eObject.eSet(eAttribute, document.get(eAttribute.getName()));
+			Object value = document.get(eAttribute.getName());
+			EClassifier eType = eAttribute.getEType();
+			if (eType instanceof EEnum) {
+				EEnum eEnum = (EEnum) eType;
+				EEnumLiteral eEnumLiteral = eEnum.getEEnumLiteral(value.toString());
+
+				eObject.eSet(eAttribute, eEnumLiteral.getInstance());
+			} else {
+				eObject.eSet(eAttribute, value);
+			}
 		}
 
 		for (EReference eReference : eClass.getEAllContainments()) {

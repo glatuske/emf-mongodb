@@ -5,6 +5,7 @@ package net.latuske.emfmogodb.model.impl;
 import net.latuske.emfmogodb.model.*;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
@@ -58,8 +59,39 @@ public class MyFactoryImpl extends EFactoryImpl implements MyFactory {
 		switch (eClass.getClassifierID()) {
 			case MyPackage.PERSON: return createPerson();
 			case MyPackage.ADDRESS: return createAddress();
+			case MyPackage.EMAIL_ADDRESS: return createEMailAddress();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object createFromString(EDataType eDataType, String initialValue) {
+		switch (eDataType.getClassifierID()) {
+			case MyPackage.EMAIL_ADDRESS_TYPE:
+				return createEMailAddressTypeFromString(eDataType, initialValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String convertToString(EDataType eDataType, Object instanceValue) {
+		switch (eDataType.getClassifierID()) {
+			case MyPackage.EMAIL_ADDRESS_TYPE:
+				return convertEMailAddressTypeToString(eDataType, instanceValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
 	}
 
@@ -81,6 +113,36 @@ public class MyFactoryImpl extends EFactoryImpl implements MyFactory {
 	public Address createAddress() {
 		AddressImpl address = new AddressImpl();
 		return address;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EMailAddress createEMailAddress() {
+		EMailAddressImpl eMailAddress = new EMailAddressImpl();
+		return eMailAddress;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EMailAddressType createEMailAddressTypeFromString(EDataType eDataType, String initialValue) {
+		EMailAddressType result = EMailAddressType.get(initialValue);
+		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertEMailAddressTypeToString(EDataType eDataType, Object instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
 	}
 
 	/**

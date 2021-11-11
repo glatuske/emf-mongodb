@@ -16,7 +16,8 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  * <ul>
  *   <li>{@link net.latuske.emfmogodb.model.Person#getName <em>Name</em>}</li>
- *   <li>{@link net.latuske.emfmogodb.model.Person#getAddresses <em>Addresses</em>}</li>
+ *   <li>{@link net.latuske.emfmogodb.model.Person#getAddress <em>Address</em>}</li>
+ *   <li>{@link net.latuske.emfmogodb.model.Person#getEmailAddresses <em>Email Addresses</em>}</li>
  * </ul>
  *
  * @see net.latuske.emfmogodb.model.MyPackage#getPerson()
@@ -47,15 +48,37 @@ public interface Person extends EObject {
 	void setName(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Addresses</b></em>' containment reference list.
-	 * The list contents are of type {@link net.latuske.emfmogodb.model.Address}.
+	 * Returns the value of the '<em><b>Address</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Addresses</em>' containment reference list.
-	 * @see net.latuske.emfmogodb.model.MyPackage#getPerson_Addresses()
+	 * @return the value of the '<em>Address</em>' containment reference.
+	 * @see #setAddress(Address)
+	 * @see net.latuske.emfmogodb.model.MyPackage#getPerson_Address()
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<Address> getAddresses();
+	Address getAddress();
+
+	/**
+	 * Sets the value of the '{@link net.latuske.emfmogodb.model.Person#getAddress <em>Address</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Address</em>' containment reference.
+	 * @see #getAddress()
+	 * @generated
+	 */
+	void setAddress(Address value);
+
+	/**
+	 * Returns the value of the '<em><b>Email Addresses</b></em>' containment reference list.
+	 * The list contents are of type {@link net.latuske.emfmogodb.model.EMailAddress}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Email Addresses</em>' containment reference list.
+	 * @see net.latuske.emfmogodb.model.MyPackage#getPerson_EmailAddresses()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<EMailAddress> getEmailAddresses();
 
 } // Person

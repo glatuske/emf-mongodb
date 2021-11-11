@@ -40,6 +40,15 @@ public interface MyFactory extends EFactory {
 	Address createAddress();
 
 	/**
+	 * Returns a new object of class '<em>EMail Address</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>EMail Address</em>'.
+	 * @generated
+	 */
+	EMailAddress createEMailAddress();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -7,12 +7,21 @@
   <foreignModel>my.ecore</foreignModel>
   <genPackages prefix="My" basePackage="net.latuske.emfmogodb" disposableProviderFactory="true"
       ecorePackage="my.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="my.ecore#//EMailAddressType">
+      <genEnumLiterals ecoreEnumLiteral="my.ecore#//EMailAddressType/Private"/>
+      <genEnumLiterals ecoreEnumLiteral="my.ecore#//EMailAddressType/Office"/>
+    </genEnums>
     <genClasses ecoreClass="my.ecore#//Person">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute my.ecore#//Person/name"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference my.ecore#//Person/addresses"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference my.ecore#//Person/address"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference my.ecore#//Person/emailAddresses"/>
     </genClasses>
     <genClasses ecoreClass="my.ecore#//Address">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute my.ecore#//Address/city"/>
+    </genClasses>
+    <genClasses ecoreClass="my.ecore#//EMailAddress">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute my.ecore#//EMailAddress/email"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute my.ecore#//EMailAddress/type"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

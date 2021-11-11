@@ -4,6 +4,7 @@ package net.latuske.emfmogodb.model;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -76,13 +77,22 @@ public interface MyPackage extends EPackage {
 	int PERSON__NAME = 0;
 
 	/**
-	 * The feature id for the '<em><b>Addresses</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Address</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PERSON__ADDRESSES = 1;
+	int PERSON__ADDRESS = 1;
+
+	/**
+	 * The feature id for the '<em><b>Email Addresses</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PERSON__EMAIL_ADDRESSES = 2;
 
 	/**
 	 * The number of structural features of the '<em>Person</em>' class.
@@ -91,7 +101,7 @@ public interface MyPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PERSON_FEATURE_COUNT = 2;
+	int PERSON_FEATURE_COUNT = 3;
 
 	/**
 	 * The number of operations of the '<em>Person</em>' class.
@@ -141,6 +151,63 @@ public interface MyPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link net.latuske.emfmogodb.model.impl.EMailAddressImpl <em>EMail Address</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see net.latuske.emfmogodb.model.impl.EMailAddressImpl
+	 * @see net.latuske.emfmogodb.model.impl.MyPackageImpl#getEMailAddress()
+	 * @generated
+	 */
+	int EMAIL_ADDRESS = 2;
+
+	/**
+	 * The feature id for the '<em><b>Email</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EMAIL_ADDRESS__EMAIL = 0;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EMAIL_ADDRESS__TYPE = 1;
+
+	/**
+	 * The number of structural features of the '<em>EMail Address</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EMAIL_ADDRESS_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>EMail Address</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EMAIL_ADDRESS_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link net.latuske.emfmogodb.model.EMailAddressType <em>EMail Address Type</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see net.latuske.emfmogodb.model.EMailAddressType
+	 * @see net.latuske.emfmogodb.model.impl.MyPackageImpl#getEMailAddressType()
+	 * @generated
+	 */
+	int EMAIL_ADDRESS_TYPE = 3;
+
+
+	/**
 	 * Returns the meta object for class '{@link net.latuske.emfmogodb.model.Person <em>Person</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -162,15 +229,26 @@ public interface MyPackage extends EPackage {
 	EAttribute getPerson_Name();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link net.latuske.emfmogodb.model.Person#getAddresses <em>Addresses</em>}'.
+	 * Returns the meta object for the containment reference '{@link net.latuske.emfmogodb.model.Person#getAddress <em>Address</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Addresses</em>'.
-	 * @see net.latuske.emfmogodb.model.Person#getAddresses()
+	 * @return the meta object for the containment reference '<em>Address</em>'.
+	 * @see net.latuske.emfmogodb.model.Person#getAddress()
 	 * @see #getPerson()
 	 * @generated
 	 */
-	EReference getPerson_Addresses();
+	EReference getPerson_Address();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link net.latuske.emfmogodb.model.Person#getEmailAddresses <em>Email Addresses</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Email Addresses</em>'.
+	 * @see net.latuske.emfmogodb.model.Person#getEmailAddresses()
+	 * @see #getPerson()
+	 * @generated
+	 */
+	EReference getPerson_EmailAddresses();
 
 	/**
 	 * Returns the meta object for class '{@link net.latuske.emfmogodb.model.Address <em>Address</em>}'.
@@ -192,6 +270,48 @@ public interface MyPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getAddress_City();
+
+	/**
+	 * Returns the meta object for class '{@link net.latuske.emfmogodb.model.EMailAddress <em>EMail Address</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>EMail Address</em>'.
+	 * @see net.latuske.emfmogodb.model.EMailAddress
+	 * @generated
+	 */
+	EClass getEMailAddress();
+
+	/**
+	 * Returns the meta object for the attribute '{@link net.latuske.emfmogodb.model.EMailAddress#getEmail <em>Email</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Email</em>'.
+	 * @see net.latuske.emfmogodb.model.EMailAddress#getEmail()
+	 * @see #getEMailAddress()
+	 * @generated
+	 */
+	EAttribute getEMailAddress_Email();
+
+	/**
+	 * Returns the meta object for the attribute '{@link net.latuske.emfmogodb.model.EMailAddress#getType <em>Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Type</em>'.
+	 * @see net.latuske.emfmogodb.model.EMailAddress#getType()
+	 * @see #getEMailAddress()
+	 * @generated
+	 */
+	EAttribute getEMailAddress_Type();
+
+	/**
+	 * Returns the meta object for enum '{@link net.latuske.emfmogodb.model.EMailAddressType <em>EMail Address Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>EMail Address Type</em>'.
+	 * @see net.latuske.emfmogodb.model.EMailAddressType
+	 * @generated
+	 */
+	EEnum getEMailAddressType();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -235,12 +355,20 @@ public interface MyPackage extends EPackage {
 		EAttribute PERSON__NAME = eINSTANCE.getPerson_Name();
 
 		/**
-		 * The meta object literal for the '<em><b>Addresses</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Address</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference PERSON__ADDRESSES = eINSTANCE.getPerson_Addresses();
+		EReference PERSON__ADDRESS = eINSTANCE.getPerson_Address();
+
+		/**
+		 * The meta object literal for the '<em><b>Email Addresses</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PERSON__EMAIL_ADDRESSES = eINSTANCE.getPerson_EmailAddresses();
 
 		/**
 		 * The meta object literal for the '{@link net.latuske.emfmogodb.model.impl.AddressImpl <em>Address</em>}' class.
@@ -259,6 +387,42 @@ public interface MyPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute ADDRESS__CITY = eINSTANCE.getAddress_City();
+
+		/**
+		 * The meta object literal for the '{@link net.latuske.emfmogodb.model.impl.EMailAddressImpl <em>EMail Address</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see net.latuske.emfmogodb.model.impl.EMailAddressImpl
+		 * @see net.latuske.emfmogodb.model.impl.MyPackageImpl#getEMailAddress()
+		 * @generated
+		 */
+		EClass EMAIL_ADDRESS = eINSTANCE.getEMailAddress();
+
+		/**
+		 * The meta object literal for the '<em><b>Email</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EMAIL_ADDRESS__EMAIL = eINSTANCE.getEMailAddress_Email();
+
+		/**
+		 * The meta object literal for the '<em><b>Type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EMAIL_ADDRESS__TYPE = eINSTANCE.getEMailAddress_Type();
+
+		/**
+		 * The meta object literal for the '{@link net.latuske.emfmogodb.model.EMailAddressType <em>EMail Address Type</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see net.latuske.emfmogodb.model.EMailAddressType
+		 * @see net.latuske.emfmogodb.model.impl.MyPackageImpl#getEMailAddressType()
+		 * @generated
+		 */
+		EEnum EMAIL_ADDRESS_TYPE = eINSTANCE.getEMailAddressType();
 
 	}
 

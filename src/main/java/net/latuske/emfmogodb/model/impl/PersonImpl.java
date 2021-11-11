@@ -5,6 +5,7 @@ package net.latuske.emfmogodb.model.impl;
 import java.util.Collection;
 
 import net.latuske.emfmogodb.model.Address;
+import net.latuske.emfmogodb.model.EMailAddress;
 import net.latuske.emfmogodb.model.MyPackage;
 import net.latuske.emfmogodb.model.Person;
 
@@ -28,7 +29,8 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * </p>
  * <ul>
  *   <li>{@link net.latuske.emfmogodb.model.impl.PersonImpl#getName <em>Name</em>}</li>
- *   <li>{@link net.latuske.emfmogodb.model.impl.PersonImpl#getAddresses <em>Addresses</em>}</li>
+ *   <li>{@link net.latuske.emfmogodb.model.impl.PersonImpl#getAddress <em>Address</em>}</li>
+ *   <li>{@link net.latuske.emfmogodb.model.impl.PersonImpl#getEmailAddresses <em>Email Addresses</em>}</li>
  * </ul>
  *
  * @generated
@@ -55,14 +57,24 @@ public class PersonImpl extends MinimalEObjectImpl.Container implements Person {
 	protected String name = NAME_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getAddresses() <em>Addresses</em>}' containment reference list.
+	 * The cached value of the '{@link #getAddress() <em>Address</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getAddresses()
+	 * @see #getAddress()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<Address> addresses;
+	protected Address address;
+
+	/**
+	 * The cached value of the '{@link #getEmailAddresses() <em>Email Addresses</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getEmailAddresses()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<EMailAddress> emailAddresses;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -109,11 +121,54 @@ public class PersonImpl extends MinimalEObjectImpl.Container implements Person {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<Address> getAddresses() {
-		if (addresses == null) {
-			addresses = new EObjectContainmentEList<Address>(Address.class, this, MyPackage.PERSON__ADDRESSES);
+	public Address getAddress() {
+		return address;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetAddress(Address newAddress, NotificationChain msgs) {
+		Address oldAddress = address;
+		address = newAddress;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, MyPackage.PERSON__ADDRESS, oldAddress, newAddress);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
-		return addresses;
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAddress(Address newAddress) {
+		if (newAddress != address) {
+			NotificationChain msgs = null;
+			if (address != null)
+				msgs = ((InternalEObject)address).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - MyPackage.PERSON__ADDRESS, null, msgs);
+			if (newAddress != null)
+				msgs = ((InternalEObject)newAddress).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - MyPackage.PERSON__ADDRESS, null, msgs);
+			msgs = basicSetAddress(newAddress, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, MyPackage.PERSON__ADDRESS, newAddress, newAddress));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<EMailAddress> getEmailAddresses() {
+		if (emailAddresses == null) {
+			emailAddresses = new EObjectContainmentEList<EMailAddress>(EMailAddress.class, this, MyPackage.PERSON__EMAIL_ADDRESSES);
+		}
+		return emailAddresses;
 	}
 
 	/**
@@ -124,8 +179,10 @@ public class PersonImpl extends MinimalEObjectImpl.Container implements Person {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case MyPackage.PERSON__ADDRESSES:
-				return ((InternalEList<?>)getAddresses()).basicRemove(otherEnd, msgs);
+			case MyPackage.PERSON__ADDRESS:
+				return basicSetAddress(null, msgs);
+			case MyPackage.PERSON__EMAIL_ADDRESSES:
+				return ((InternalEList<?>)getEmailAddresses()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -140,8 +197,10 @@ public class PersonImpl extends MinimalEObjectImpl.Container implements Person {
 		switch (featureID) {
 			case MyPackage.PERSON__NAME:
 				return getName();
-			case MyPackage.PERSON__ADDRESSES:
-				return getAddresses();
+			case MyPackage.PERSON__ADDRESS:
+				return getAddress();
+			case MyPackage.PERSON__EMAIL_ADDRESSES:
+				return getEmailAddresses();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -158,9 +217,12 @@ public class PersonImpl extends MinimalEObjectImpl.Container implements Person {
 			case MyPackage.PERSON__NAME:
 				setName((String)newValue);
 				return;
-			case MyPackage.PERSON__ADDRESSES:
-				getAddresses().clear();
-				getAddresses().addAll((Collection<? extends Address>)newValue);
+			case MyPackage.PERSON__ADDRESS:
+				setAddress((Address)newValue);
+				return;
+			case MyPackage.PERSON__EMAIL_ADDRESSES:
+				getEmailAddresses().clear();
+				getEmailAddresses().addAll((Collection<? extends EMailAddress>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -177,8 +239,11 @@ public class PersonImpl extends MinimalEObjectImpl.Container implements Person {
 			case MyPackage.PERSON__NAME:
 				setName(NAME_EDEFAULT);
 				return;
-			case MyPackage.PERSON__ADDRESSES:
-				getAddresses().clear();
+			case MyPackage.PERSON__ADDRESS:
+				setAddress((Address)null);
+				return;
+			case MyPackage.PERSON__EMAIL_ADDRESSES:
+				getEmailAddresses().clear();
 				return;
 		}
 		super.eUnset(featureID);
@@ -194,8 +259,10 @@ public class PersonImpl extends MinimalEObjectImpl.Container implements Person {
 		switch (featureID) {
 			case MyPackage.PERSON__NAME:
 				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
-			case MyPackage.PERSON__ADDRESSES:
-				return addresses != null && !addresses.isEmpty();
+			case MyPackage.PERSON__ADDRESS:
+				return address != null;
+			case MyPackage.PERSON__EMAIL_ADDRESSES:
+				return emailAddresses != null && !emailAddresses.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
