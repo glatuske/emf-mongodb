@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
 import com.mongodb.client.FindIterable;
@@ -174,6 +175,7 @@ public class EmfMogodb {
 		EClass eClass = eObject.eClass();
 
 		Document document = new Document();
+		document.put("emf-package-ns", eClass.getEPackage().getNsURI());
 		document.put("emf-type", eClass.getName());
 
 		for (EAttribute eAttribute : eClass.getEAllAttributes()) {
@@ -209,8 +211,10 @@ public class EmfMogodb {
 			return null;
 		}
 
+		String emfPackageNs = (String) document.get("emf-package-ns");
 		String emfType = (String) document.get("emf-type");
-		EClass eClass = (EClass) MyPackage.eINSTANCE.getEClassifier(emfType);
+		EPackage ePackage = EPackage.Registry.INSTANCE.getEPackage(emfPackageNs);
+		EClass eClass = (EClass) ePackage.getEClassifier(emfType);
 		EObject eObject = MyFactory.eINSTANCE.create(eClass);
 
 		for (EAttribute eAttribute : eClass.getEAllAttributes()) {
