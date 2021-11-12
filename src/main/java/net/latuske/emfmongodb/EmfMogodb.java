@@ -1,5 +1,8 @@
 package net.latuske.emfmongodb;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.or;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -60,10 +63,15 @@ public class EmfMogodb {
 		eMailAddress2.setEmail("bob@bob.alice");
 		eMailAddress2.setType(EMailAddressType.PRIVATE);
 
+		EMailAddress eMailAddress3 = MyFactory.eINSTANCE.createEMailAddress();
+		eMailAddress3.setEmail("bob@bob.bob");
+		eMailAddress3.setType(EMailAddressType.OFFICE);
+
 		Person bob = MyFactory.eINSTANCE.createPerson();
 		bob.setName("Bob");
 		bob.setAddress(address2);
 		bob.getEmailAddresses().add(eMailAddress2);
+		bob.getEmailAddresses().add(eMailAddress3);
 
 		insert(collection, alice);
 		findByName(collection, "Alice");
@@ -73,6 +81,13 @@ public class EmfMogodb {
 		findByName(collection, "Alice");
 		findByName(collection, "Bob");
 		findByNamePattern(collection, ".*li.*");
+		findByCity(collection, "Stuttgart");
+		findByEMailAddress(collection, "bob@bob.bob");
+
+		Bson filter = or(eq(MyPackage.Literals.PERSON__NAME.getName(), "Bob"),
+				eq(MyPackage.Literals.PERSON__EMAIL_ADDRESSES.getName() + '.' + MyPackage.Literals.EMAIL_ADDRESS__EMAIL.getName(),
+						"alice@bob.alice"));
+		findByFilter(collection, filter);
 	}
 
 	private static void insert(MongoCollection<Document> collection, Person person) {
@@ -91,7 +106,7 @@ public class EmfMogodb {
 		long start = System.currentTimeMillis();
 		Bson filter = new Document(MyPackage.Literals.PERSON__NAME.getName(), name);
 		FindIterable<Document> cursor = collection.find(filter);
-		System.out.println("Find took: " + (System.currentTimeMillis() - start));
+		System.out.println("Find by name took: " + (System.currentTimeMillis() - start));
 
 		start = System.currentTimeMillis();
 		System.out.println(convertToEObject(cursor.first()));
@@ -105,10 +120,51 @@ public class EmfMogodb {
 		Pattern pattern = Pattern.compile(namePattern, Pattern.CASE_INSENSITIVE);
 		Bson filter = Filters.regex(MyPackage.Literals.PERSON__NAME.getName(), pattern);
 		FindIterable<Document> cursor = collection.find(filter);
-		System.out.println("Find took: " + (System.currentTimeMillis() - start));
+		System.out.println("Find by name pattern took: " + (System.currentTimeMillis() - start));
 
 		start = System.currentTimeMillis();
 		System.out.println(convertToEObject(cursor.first()));
+		System.out.println("Convert took: " + (System.currentTimeMillis() - start));
+
+		System.out.println();
+	}
+
+	private static void findByCity(MongoCollection<Document> collection, String city) {
+		long start = System.currentTimeMillis();
+		Bson filter = eq(MyPackage.Literals.PERSON__ADDRESS.getName(),
+				new Document().append("emf-type", "Address").append(MyPackage.Literals.ADDRESS__CITY.getName(), city));
+		FindIterable<Document> cursor = collection.find(filter);
+		System.out.println("Find by city took: " + (System.currentTimeMillis() - start));
+
+		start = System.currentTimeMillis();
+		cursor.map(EmfMogodb::convertToEObject).forEach(System.out::println);
+		System.out.println("Convert took: " + (System.currentTimeMillis() - start));
+
+		System.out.println();
+
+	}
+
+	private static void findByEMailAddress(MongoCollection<Document> collection, String emailAddress) {
+		long start = System.currentTimeMillis();
+		Bson filter = new Document(MyPackage.Literals.PERSON__EMAIL_ADDRESSES.getName() + '.'
+				+ MyPackage.Literals.EMAIL_ADDRESS__EMAIL.getName(), emailAddress);
+		FindIterable<Document> cursor = collection.find(filter);
+		System.out.println("Find by email address took: " + (System.currentTimeMillis() - start));
+
+		start = System.currentTimeMillis();
+		System.out.println(convertToEObject(cursor.first()));
+		System.out.println("Convert took: " + (System.currentTimeMillis() - start));
+
+		System.out.println();
+	}
+
+	private static void findByFilter(MongoCollection<Document> collection, Bson filter) {
+		long start = System.currentTimeMillis();
+		FindIterable<Document> cursor = collection.find(filter);
+		System.out.println("Find by filter took: " + (System.currentTimeMillis() - start));
+
+		start = System.currentTimeMillis();
+		cursor.map(EmfMogodb::convertToEObject).forEach(System.out::println);
 		System.out.println("Convert took: " + (System.currentTimeMillis() - start));
 
 		System.out.println();
