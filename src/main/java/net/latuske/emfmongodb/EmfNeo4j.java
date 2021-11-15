@@ -76,13 +76,40 @@ public class EmfNeo4j {
 
 		findByName(graphDb, "Alice");
 
+		generateTestData(graphDb, 10_000, 5);
+
+		findByName(graphDb, "Alice");
+	}
+
+	private static void generateTestData(GraphDatabaseService graphDb, int numberOfPersons,
+			int numberOfEMailAddressPerPerson) {
+		long start = System.currentTimeMillis();
+
 		try (Transaction tx = graphDb.beginTx()) {
-			// Result execute = tx.execute(null);
-			Node findNode = tx.findNode(Label.label(MyPackage.Literals.PERSON.getName()),
-					MyPackage.Literals.PERSON__NAME.getName(), "Alice");
-			EObject eObject = createEObject(findNode);
-			System.out.println(eObject);
+
+			for (int i = 0; i < numberOfPersons; i++) {
+				Address address = MyFactory.eINSTANCE.createAddress();
+				address.setCity("AddressCity" + i);
+
+				Person person = MyFactory.eINSTANCE.createPerson();
+				person.setName("PersonName" + i);
+				person.setAddress(address);
+
+				for (int j = 0; j < numberOfEMailAddressPerPerson; j++) {
+					EMailAddress eMailAddress = MyFactory.eINSTANCE.createEMailAddress();
+					eMailAddress.setEmail("PersonName" + i + "@provider" + j + ".com");
+					eMailAddress.setType(j % 2 == 0 ? EMailAddressType.OFFICE : EMailAddressType.PRIVATE);
+					person.getEmailAddresses().add(eMailAddress);
+				}
+
+				createNode(tx, person);
+			}
+
+			tx.commit();
 		}
+
+		System.out.println("Generate test data took: " + (System.currentTimeMillis() - start));
+		System.out.println();
 	}
 
 	private static void insert(GraphDatabaseService graphDb, Person person) {

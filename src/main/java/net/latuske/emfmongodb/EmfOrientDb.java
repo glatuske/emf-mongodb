@@ -22,7 +22,9 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.ODatabaseType;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.ODirection;
 import com.orientechnologies.orient.core.record.OEdge;
 import com.orientechnologies.orient.core.record.OVertex;
@@ -81,9 +83,41 @@ public class EmfOrientDb {
 
 				findByName(session, "Alice");
 				findByNamePattern(session, "%li%");
+
+				generateTestData(session, 10_000, 5);
+
+				findByName(session, "Alice");
+				findByNamePattern(session, "%li%");
 			}
 		}
+	}
 
+	private static void generateTestData(ODatabaseSession session, int numberOfPersons,
+			int numberOfEMailAddressPerPerson) {
+		long start = System.currentTimeMillis();
+		session.declareIntent(new OIntentMassiveInsert());
+
+		for (int i = 0; i < numberOfPersons; i++) {
+			Address address = MyFactory.eINSTANCE.createAddress();
+			address.setCity("AddressCity" + i);
+
+			Person person = MyFactory.eINSTANCE.createPerson();
+			person.setName("PersonName" + i);
+			person.setAddress(address);
+
+			for (int j = 0; j < numberOfEMailAddressPerPerson; j++) {
+				EMailAddress eMailAddress = MyFactory.eINSTANCE.createEMailAddress();
+				eMailAddress.setEmail("PersonName" + i + "@provider" + j + ".com");
+				eMailAddress.setType(j % 2 == 0 ? EMailAddressType.OFFICE : EMailAddressType.PRIVATE);
+				person.getEmailAddresses().add(eMailAddress);
+			}
+
+			createVertex(session, person).save();
+		}
+
+		session.declareIntent(null);
+		System.out.println("Generate test data took: " + (System.currentTimeMillis() - start));
+		System.out.println();
 	}
 
 	private static void insert(ODatabaseSession session, Person person) {
@@ -97,8 +131,31 @@ public class EmfOrientDb {
 
 	private static OVertex createVertex(ODatabaseSession session, EObject eObject) {
 		EClass eClass = eObject.eClass();
+		OClass oClass = session.getClass("vertex_" + eClass.getName());
 
-		OVertex vertex = session.newVertex();
+		if (oClass == null) {
+			oClass = session.createVertexClass("vertex_" + eClass.getName());
+
+			oClass.createProperty("emf_package_ns", OType.STRING);
+			oClass.createIndex(eClass.getName() + "_emf_package_nsIndex", OClass.INDEX_TYPE.NOTUNIQUE_HASH_INDEX,
+					"emf_package_ns");
+
+			oClass.createProperty("emf_type", OType.STRING);
+			oClass.createIndex(eClass.getName() + "_emf_typeIndex", OClass.INDEX_TYPE.NOTUNIQUE_HASH_INDEX, "emf_type");
+
+			for (EAttribute eAttribute : eClass.getEAllAttributes()) {
+				if (eAttribute.getEType() instanceof EEnum) {
+					oClass.createProperty(eAttribute.getName(), OType.STRING);
+				} else {
+					oClass.createProperty(eAttribute.getName(),
+							OType.getTypeByClass(eAttribute.getEType().getInstanceClass()));
+				}
+				oClass.createIndex(eClass.getName() + '_' + eAttribute.getName() + "Index", OClass.INDEX_TYPE.NOTUNIQUE_HASH_INDEX,
+						eAttribute.getName());
+			}
+		}
+
+		OVertex vertex = session.newVertex(oClass);
 		vertex.setProperty("emf_package_ns", eClass.getEPackage().getNsURI());
 		vertex.setProperty("emf_type", eClass.getName());
 
@@ -115,14 +172,14 @@ public class EmfOrientDb {
 		for (EReference eReference : eClass.getEAllContainments()) {
 			Object object = eObject.eGet(eReference);
 
-			OClass oClass = getOrCreateClass(session, eReference);
+			OClass oClassForEdge = getOrCreateClass(session, eReference);
 			if (eReference.isMany()) {
 				((List<?>) object).stream().map(EObject.class::cast)
 						.map(childEObject -> createVertex(session, childEObject))
-						.forEach(otherVetex -> vertex.addEdge(otherVetex, oClass));
+						.forEach(otherVetex -> vertex.addEdge(otherVetex, oClassForEdge));
 			} else {
 				if (object instanceof EObject) {
-					vertex.addEdge(createVertex(session, (EObject) object), oClass);
+					vertex.addEdge(createVertex(session, (EObject) object), oClassForEdge);
 				} else {
 					vertex.setProperty(eReference.getName(), object);
 				}
@@ -133,9 +190,9 @@ public class EmfOrientDb {
 	}
 
 	private static OClass getOrCreateClass(ODatabaseSession session, EReference eReference) {
-		OClass oClass = session.getClass(eReference.getName());
+		OClass oClass = session.getClass("edge_" + eReference.getName());
 		if (oClass == null) {
-			oClass = session.createClass(eReference.getName(), "E");
+			oClass = session.createEdgeClass("edge_" + eReference.getName());
 		}
 
 		return oClass;
@@ -143,12 +200,13 @@ public class EmfOrientDb {
 
 	private static void findByName(ODatabaseSession session, String name) {
 		long start = System.currentTimeMillis();
-		String statement = "SELECT FROM V WHERE " + MyPackage.Literals.PERSON__NAME.getName() + " = ? and emf_type = ?";
+		String statement = "SELECT FROM V WHERE " + MyPackage.Literals.PERSON__NAME.getName() + " = ? and emf_type = ?";;
 		OResultSet resultSet = session.query(statement, name, MyPackage.Literals.PERSON.getName());
+		List<OVertex> result = resultSet.vertexStream().collect(Collectors.toList());
 		System.out.println("Find by name took: " + (System.currentTimeMillis() - start));
 
 		start = System.currentTimeMillis();
-		resultSet.vertexStream().map(EmfOrientDb::createEObject).forEach(System.out::println);
+		result.stream().map(EmfOrientDb::createEObject).forEach(System.out::println);
 		System.out.println("Convert took: " + (System.currentTimeMillis() - start));
 		System.out.println();
 	}
@@ -157,11 +215,12 @@ public class EmfOrientDb {
 		long start = System.currentTimeMillis();
 		String statement = "SELECT FROM V WHERE " + MyPackage.Literals.PERSON__NAME.getName()
 				+ " like ? and emf_type = ?";
-		OResultSet resultSet = session.query(statement, namePattern, MyPackage.Literals.PERSON.getName());
+		OResultSet resultSet = session.query(statement, "Person%", MyPackage.Literals.PERSON.getName());
+		List<OVertex> result = resultSet.vertexStream().collect(Collectors.toList());
 		System.out.println("Find by name pattern took: " + (System.currentTimeMillis() - start));
 
 		start = System.currentTimeMillis();
-		resultSet.vertexStream().map(EmfOrientDb::createEObject).forEach(System.out::println);
+		result.stream().map(EmfOrientDb::createEObject).forEach(System.out::println);
 		System.out.println("Convert took: " + (System.currentTimeMillis() - start));
 		System.out.println();
 	}
@@ -200,7 +259,7 @@ public class EmfOrientDb {
 	}
 
 	private static List<EObject> createEObjectsForEdges(OVertex vertex, EReference eReference) {
-		Iterable<OEdge> edges = vertex.getEdges(ODirection.OUT, eReference.getName());
+		Iterable<OEdge> edges = vertex.getEdges(ODirection.OUT, "edge_" + eReference.getName());
 		return StreamSupport.stream(edges.spliterator(), false).map(edge -> edge.getVertex(ODirection.IN))
 				.map(EmfOrientDb::createEObject).collect(Collectors.toList());
 	}
