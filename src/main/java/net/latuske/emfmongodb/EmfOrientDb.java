@@ -88,6 +88,7 @@ public class EmfOrientDb {
 
 				findByName(session, "Alice");
 				findByNamePattern(session, "%li%");
+				findByNamePattern(session, "Person%");
 			}
 		}
 	}
@@ -150,8 +151,8 @@ public class EmfOrientDb {
 					oClass.createProperty(eAttribute.getName(),
 							OType.getTypeByClass(eAttribute.getEType().getInstanceClass()));
 				}
-				oClass.createIndex(eClass.getName() + '_' + eAttribute.getName() + "Index", OClass.INDEX_TYPE.NOTUNIQUE_HASH_INDEX,
-						eAttribute.getName());
+				oClass.createIndex(eClass.getName() + '_' + eAttribute.getName() + "Index",
+						OClass.INDEX_TYPE.NOTUNIQUE_HASH_INDEX, eAttribute.getName());
 			}
 		}
 
@@ -200,7 +201,8 @@ public class EmfOrientDb {
 
 	private static void findByName(ODatabaseSession session, String name) {
 		long start = System.currentTimeMillis();
-		String statement = "SELECT FROM V WHERE " + MyPackage.Literals.PERSON__NAME.getName() + " = ? and emf_type = ?";;
+		String statement = "SELECT FROM V WHERE " + MyPackage.Literals.PERSON__NAME.getName() + " = ? and emf_type = ?";
+		;
 		OResultSet resultSet = session.query(statement, name, MyPackage.Literals.PERSON.getName());
 		List<OVertex> result = resultSet.vertexStream().collect(Collectors.toList());
 		System.out.println("Find by name took: " + (System.currentTimeMillis() - start));
@@ -215,12 +217,12 @@ public class EmfOrientDb {
 		long start = System.currentTimeMillis();
 		String statement = "SELECT FROM V WHERE " + MyPackage.Literals.PERSON__NAME.getName()
 				+ " like ? and emf_type = ?";
-		OResultSet resultSet = session.query(statement, "Person%", MyPackage.Literals.PERSON.getName());
+		OResultSet resultSet = session.query(statement, namePattern, MyPackage.Literals.PERSON.getName());
 		List<OVertex> result = resultSet.vertexStream().collect(Collectors.toList());
 		System.out.println("Find by name pattern took: " + (System.currentTimeMillis() - start));
 
 		start = System.currentTimeMillis();
-		result.stream().map(EmfOrientDb::createEObject).forEach(System.out::println);
+		result.stream().map(EmfOrientDb::createEObject).collect(Collectors.toList());// .forEach(System.out::println);
 		System.out.println("Convert took: " + (System.currentTimeMillis() - start));
 		System.out.println();
 	}

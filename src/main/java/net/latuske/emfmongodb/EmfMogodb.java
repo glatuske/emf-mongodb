@@ -41,9 +41,7 @@ public class EmfMogodb {
 		MongoDatabase database = mongoClient.getDatabase("emfmongo-db");
 		MongoCollection<Document> collection = database.getCollection("emfmongo-collection");
 
-		System.out.println(collection.countDocuments());
 		collection.deleteMany(new Document());
-		System.out.println(collection.countDocuments());
 
 		Address address1 = MyFactory.eINSTANCE.createAddress();
 		address1.setCity("Stuttgart");
@@ -81,14 +79,44 @@ public class EmfMogodb {
 		insert(collection, bob);
 		findByName(collection, "Alice");
 		findByName(collection, "Bob");
+
+		generateTestData(collection, 10_000, 5);
+
 		findByNamePattern(collection, ".*li.*");
 		findByCity(collection, "Stuttgart");
 		findByEMailAddress(collection, "bob@bob.bob");
 
 		Bson filter = or(eq(MyPackage.Literals.PERSON__NAME.getName(), "Bob"),
-				eq(MyPackage.Literals.PERSON__EMAIL_ADDRESSES.getName() + '.' + MyPackage.Literals.EMAIL_ADDRESS__EMAIL.getName(),
-						"alice@bob.alice"));
+				eq(MyPackage.Literals.PERSON__EMAIL_ADDRESSES.getName() + '.'
+						+ MyPackage.Literals.EMAIL_ADDRESS__EMAIL.getName(), "alice@bob.alice"));
 		findByFilter(collection, filter);
+	}
+
+	private static void generateTestData(MongoCollection<Document> collection, int numberOfPersons,
+			int numberOfEMailAddressPerPerson) {
+		long start = System.currentTimeMillis();
+
+		for (int i = 0; i < numberOfPersons; i++) {
+			Address address = MyFactory.eINSTANCE.createAddress();
+			address.setCity("AddressCity" + i);
+
+			Person person = MyFactory.eINSTANCE.createPerson();
+			person.setName("PersonName" + i);
+			person.setAddress(address);
+
+			for (int j = 0; j < numberOfEMailAddressPerPerson; j++) {
+				EMailAddress eMailAddress = MyFactory.eINSTANCE.createEMailAddress();
+				eMailAddress.setEmail("PersonName" + i + "@provider" + j + ".com");
+				eMailAddress.setType(j % 2 == 0 ? EMailAddressType.OFFICE : EMailAddressType.PRIVATE);
+				person.getEmailAddresses().add(eMailAddress);
+			}
+
+			Document document = convertToDocument(person);
+			collection.insertOne(document);
+		}
+
+		System.out.println("Generate test data took: " + (System.currentTimeMillis() - start));
+		System.out.println();
 	}
 
 	private static void insert(MongoCollection<Document> collection, Person person) {
