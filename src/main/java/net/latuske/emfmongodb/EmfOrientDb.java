@@ -71,6 +71,7 @@ public class EmfOrientDb {
 		bob.getEmailAddresses().add(eMailAddress2);
 		bob.getEmailAddresses().add(eMailAddress3);
 
+		long start = System.currentTimeMillis();
 		OrientDBConfig config = OrientDBConfig.builder()
 				.addConfig(OGlobalConfiguration.CREATE_DEFAULT_USERS, Boolean.TRUE).build();
 
@@ -78,6 +79,8 @@ public class EmfOrientDb {
 			orientDB.createIfNotExists("test", ODatabaseType.PLOCAL);
 
 			try (ODatabaseSession session = orientDB.open("test", "admin", "admin")) {
+				System.out.println("Open took: " + (System.currentTimeMillis() - start));
+
 				insert(session, alice);
 				insert(session, bob);
 
@@ -89,8 +92,29 @@ public class EmfOrientDb {
 				findByName(session, "Alice");
 				findByNamePattern(session, "%li%");
 				findByNamePattern(session, "Person%");
+
+				start = System.currentTimeMillis();
 			}
 		}
+
+		System.out.println("Close took: " + (System.currentTimeMillis() - start));
+
+		reOpen(config);
+		reOpen(config);
+		reOpen(config);
+	}
+
+	private static void reOpen(OrientDBConfig config) {
+		long start = System.currentTimeMillis();
+
+		try (OrientDB orientDB = new OrientDB("embedded:orientdb", config)) {
+			orientDB.createIfNotExists("test", ODatabaseType.PLOCAL);
+
+			try (ODatabaseSession session = orientDB.open("test", "admin", "admin")) {
+			}
+		}
+
+		System.out.println("Re-Open took: " + (System.currentTimeMillis() - start));
 	}
 
 	private static void generateTestData(ODatabaseSession session, int numberOfPersons,
@@ -222,7 +246,7 @@ public class EmfOrientDb {
 		System.out.println("Find by name pattern took: " + (System.currentTimeMillis() - start));
 
 		start = System.currentTimeMillis();
-		result.stream().map(EmfOrientDb::createEObject).collect(Collectors.toList());// .forEach(System.out::println);
+		System.out.println(result.stream().map(EmfOrientDb::createEObject).count());
 		System.out.println("Convert took: " + (System.currentTimeMillis() - start));
 		System.out.println();
 	}

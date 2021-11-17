@@ -39,9 +39,6 @@ public class EmfNeo4j {
 		Path path = Path.of("neo4j");
 		FileUtils.deleteDirectory(path.toFile());
 
-		DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(path).build();
-		GraphDatabaseService graphDb = managementService.database(GraphDatabaseSettings.DEFAULT_DATABASE_NAME);
-
 		Address address1 = MyFactory.eINSTANCE.createAddress();
 		address1.setCity("Stuttgart");
 
@@ -71,6 +68,11 @@ public class EmfNeo4j {
 		bob.getEmailAddresses().add(eMailAddress2);
 		bob.getEmailAddresses().add(eMailAddress3);
 
+		long start = System.currentTimeMillis();
+		DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(path).build();
+		GraphDatabaseService graphDb = managementService.database(GraphDatabaseSettings.DEFAULT_DATABASE_NAME);
+		System.out.println("Open took: " + (System.currentTimeMillis() - start));
+
 		insert(graphDb, alice);
 		insert(graphDb, bob);
 
@@ -79,6 +81,22 @@ public class EmfNeo4j {
 		generateTestData(graphDb, 10_000, 5);
 
 		findByName(graphDb, "Alice");
+
+		start = System.currentTimeMillis();
+		managementService.shutdown();
+		System.out.println("Close took: " + (System.currentTimeMillis() - start));
+
+		reOpen(path);
+		reOpen(path);
+		reOpen(path);
+	}
+
+	private static void reOpen(Path path) {
+		long start = System.currentTimeMillis();
+		DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(path).build();
+		managementService.database(GraphDatabaseSettings.DEFAULT_DATABASE_NAME);
+		managementService.shutdown();
+		System.out.println("Re-Open took: " + (System.currentTimeMillis() - start));
 	}
 
 	private static void generateTestData(GraphDatabaseService graphDb, int numberOfPersons,
