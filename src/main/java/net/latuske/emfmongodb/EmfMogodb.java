@@ -34,7 +34,7 @@ import net.latuske.emfmogodb.model.MyFactory;
 import net.latuske.emfmogodb.model.MyPackage;
 import net.latuske.emfmogodb.model.Person;
 
-public class EmfMogodb {
+public class EmfMongodb {
 
 	public static void main(String[] args) throws IOException {
 		MongoClient mongoClient = MongoClients.create();
